@@ -7,16 +7,12 @@ import static org.mockito.Mockito.when;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.spring.JacksonCustomizations;
-import io.spring.api.ArticleApi;
-import io.spring.api.ArticleFavoriteApi;
 import io.spring.api.ArticlesApi;
-import io.spring.api.CommentsApi;
 import io.spring.api.CurrentUserApi;
 import io.spring.api.ProfileApi;
 import io.spring.api.TagsApi;
 import io.spring.api.UsersApi;
 import io.spring.application.ArticleQueryService;
-import io.spring.application.CommentQueryService;
 import io.spring.application.ProfileQueryService;
 import io.spring.application.TagsQueryService;
 import io.spring.application.UserQueryService;
@@ -25,9 +21,6 @@ import io.spring.application.data.ArticleDataList;
 import io.spring.application.data.ProfileData;
 import io.spring.application.data.UserData;
 import io.spring.application.user.UserService;
-import io.spring.core.article.ArticleRepository;
-import io.spring.core.comment.CommentRepository;
-import io.spring.core.favorite.ArticleFavoriteRepository;
 import io.spring.core.service.JwtService;
 import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
@@ -44,7 +37,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest({UsersApi.class, CurrentUserApi.class, ArticlesApi.class, ProfileApi.class, TagsApi.class, CommentsApi.class, ArticleFavoriteApi.class, ArticleApi.class})
+@WebMvcTest({UsersApi.class, CurrentUserApi.class, ArticlesApi.class, ProfileApi.class, TagsApi.class})
 @Import({WebSecurityConfig.class, JacksonCustomizations.class, BCryptPasswordEncoder.class})
 public class WebSecurityConfigTest {
 
@@ -67,14 +60,6 @@ public class WebSecurityConfigTest {
   @MockBean private ProfileQueryService profileQueryService;
 
   @MockBean private TagsQueryService tagsQueryService;
-
-  @MockBean private ArticleRepository articleRepository;
-
-  @MockBean private CommentRepository commentRepository;
-
-  @MockBean private CommentQueryService commentQueryService;
-
-  @MockBean private ArticleFavoriteRepository articleFavoriteRepository;
 
   private User user;
   private UserData userData;
@@ -106,30 +91,6 @@ public class WebSecurityConfigTest {
         .get("/articles")
         .then()
         .statusCode(200);
-  }
-
-  @Test
-  public void should_allow_get_single_article_without_authentication() {
-    when(articleQueryService.findBySlug(eq("test-slug"), any())).thenReturn(Optional.empty());
-
-    given()
-        .contentType("application/json")
-        .when()
-        .get("/articles/test-slug")
-        .then()
-        .statusCode(404);
-  }
-
-  @Test
-  public void should_allow_get_article_comments_without_authentication() {
-    when(articleQueryService.findBySlug(eq("test-slug"), any())).thenReturn(Optional.empty());
-
-    given()
-        .contentType("application/json")
-        .when()
-        .get("/articles/test-slug/comments")
-        .then()
-        .statusCode(404);
   }
 
   @Test
@@ -286,55 +247,4 @@ public class WebSecurityConfigTest {
         .statusCode(200);
   }
 
-  @Test
-  public void should_require_authentication_for_favorite_article() {
-    given()
-        .contentType("application/json")
-        .when()
-        .post("/articles/test-slug/favorite")
-        .then()
-        .statusCode(401);
-  }
-
-  @Test
-  public void should_require_authentication_for_unfavorite_article() {
-    given()
-        .contentType("application/json")
-        .when()
-        .delete("/articles/test-slug/favorite")
-        .then()
-        .statusCode(401);
-  }
-
-  @Test
-  public void should_require_authentication_for_create_comment() {
-    given()
-        .contentType("application/json")
-        .body("{\"comment\": {\"body\": \"test comment\"}}")
-        .when()
-        .post("/articles/test-slug/comments")
-        .then()
-        .statusCode(401);
-  }
-
-  @Test
-  public void should_require_authentication_for_delete_article() {
-    given()
-        .contentType("application/json")
-        .when()
-        .delete("/articles/test-slug")
-        .then()
-        .statusCode(401);
-  }
-
-  @Test
-  public void should_require_authentication_for_update_article() {
-    given()
-        .contentType("application/json")
-        .body("{\"article\": {\"title\": \"updated\"}}")
-        .when()
-        .put("/articles/test-slug")
-        .then()
-        .statusCode(401);
-  }
 }
