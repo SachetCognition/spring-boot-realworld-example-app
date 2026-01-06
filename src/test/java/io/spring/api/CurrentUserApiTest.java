@@ -176,4 +176,99 @@ public class CurrentUserApiTest extends TestWithCurrentUser {
         .then()
         .statusCode(401);
   }
+
+  @Test
+  public void should_get_error_if_username_exists_when_update_user_profile() throws Exception {
+    String newEmail = "newemail@example.com";
+    String newBio = "updated";
+    String newUsername = "existinguser";
+
+    Map<String, Object> param = prepareUpdateParam(newEmail, newBio, newUsername);
+
+    when(userRepository.findByEmail(eq(newEmail))).thenReturn(Optional.empty());
+    when(userRepository.findByUsername(eq(newUsername)))
+        .thenReturn(Optional.of(new User("other@example.com", newUsername, "123", "", "")));
+
+    when(userQueryService.findById(eq(user.getId()))).thenReturn(Optional.of(userData));
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Token " + token)
+        .body(param)
+        .when()
+        .put("/user")
+        .then()
+        .statusCode(422)
+        .body("errors.username[0]", equalTo("username already exist"));
+  }
+
+  @Test
+  public void should_get_401_with_malformed_token_header() throws Exception {
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Token")
+        .when()
+        .get("/user")
+        .then()
+        .statusCode(401);
+  }
+
+  @Test
+  public void should_get_401_with_empty_token() throws Exception {
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Token ")
+        .when()
+        .get("/user")
+        .then()
+        .statusCode(401);
+  }
+
+  @Test
+  public void should_allow_update_with_same_email_as_current_user() throws Exception {
+    String newBio = "updated bio";
+
+    Map<String, Object> param =
+        new HashMap<String, Object>() {
+          {
+            put(
+                "user",
+                new HashMap<String, Object>() {
+                  {
+                    put("email", email);
+                    put("bio", newBio);
+                    put("username", username);
+                  }
+                });
+          }
+        };
+
+    when(userRepository.findByEmail(eq(email))).thenReturn(Optional.of(user));
+    when(userRepository.findByUsername(eq(username))).thenReturn(Optional.of(user));
+
+    when(userQueryService.findById(eq(user.getId()))).thenReturn(Optional.of(userData));
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Token " + token)
+        .body(param)
+        .when()
+        .put("/user")
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  public void should_get_401_with_bearer_prefix_and_invalid_token() throws Exception {
+    String invalidToken = "invalid-bearer-token";
+    when(jwtService.getSubFromToken(eq(invalidToken))).thenReturn(Optional.empty());
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Bearer " + invalidToken)
+        .when()
+        .get("/user")
+        .then()
+        .statusCode(401);
+  }
 }
