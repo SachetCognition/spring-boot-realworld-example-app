@@ -1,0 +1,11 @@
+Pre-Migration Test Results
+=========================
+Date: Tue Mar 10 09:06:12 UTC 2026
+
+Total tests: 68
+Failures: 0
+Ignored: 0
+Duration: 2.770s
+Result: BUILD SUCCESSFUL
+
+All 68 tests passed with zero failures on Java 11 / Spring Boot 2.6.3 / Gradle 7.4

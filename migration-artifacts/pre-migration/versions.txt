@@ -1,0 +1,36 @@
+=== Pre-Migration Version Information ===
+
+Date: Tue Mar 10 09:05:17 UTC 2026
+
+--- Java ---
+
+--- Gradle (wrapper) ---
+
+------------------------------------------------------------
+Gradle 7.4
+------------------------------------------------------------
+
+Build time:   2022-02-08 09:58:38 UTC
+Revision:     f0d9291c04b90b59445041eaa75b2ee744162586
+
+Kotlin:       1.5.31
+Groovy:       3.0.9
+Ant:          Apache Ant(TM) version 1.10.11 compiled on July 10 2021
+JVM:          11.0.29 (Ubuntu 11.0.29+7-post-Ubuntu-1ubuntu122.04)
+OS:           Linux 5.15.200 amd64
+
+
+--- build.gradle plugins ---
+Spring Boot: 2.6.3
+Spring Dependency Management: 1.0.11.RELEASE
+DGS Codegen: 5.0.6
+Spotless: 6.2.1
+Source/Target Compatibility: Java 11
+
+--- Key Dependencies ---
+mybatis-spring-boot-starter: 2.2.2
+graphql-dgs-spring-boot-starter: 4.9.21
+jjwt: 0.11.2
+joda-time: 2.10.13
+sqlite-jdbc: 3.36.0.3
+rest-assured: 4.5.1
