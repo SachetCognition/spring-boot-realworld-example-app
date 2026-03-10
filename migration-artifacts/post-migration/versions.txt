@@ -1,0 +1,37 @@
+=== Post-Migration Version Information ===
+
+Date: Tue Mar 10 09:15:18 UTC 2026
+
+--- Java ---
+
+--- Gradle (wrapper) ---
+
+------------------------------------------------------------
+Gradle 8.12
+------------------------------------------------------------
+
+Build time:    2024-12-20 15:46:53 UTC
+Revision:      a3cacb207fec727859be9354c1937da2e59004c1
+
+Kotlin:        2.0.21
+Groovy:        3.0.22
+Ant:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024
+Launcher JVM:  21.0.9 (Azul Systems, Inc. 21.0.9+10-LTS)
+Daemon JVM:    /home/ubuntu/.sdkman/candidates/java/21.0.9-zulu (no JDK specified, using current Java home)
+OS:            Linux 5.15.200 amd64
+
+
+--- build.gradle plugins ---
+Spring Boot: 3.4.3
+Spring Dependency Management: 1.1.7
+DGS Codegen: 7.0.3
+Spotless: 7.0.2
+Source/Target Compatibility: Java 21
+
+--- Key Dependencies ---
+mybatis-spring-boot-starter: 3.0.4
+graphql-dgs-spring-boot-starter: 9.2.2
+jjwt: 0.12.6
+joda-time: 2.13.0
+sqlite-jdbc: 3.47.2.0
+rest-assured: 5.5.1
