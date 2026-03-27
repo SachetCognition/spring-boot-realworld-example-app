@@ -83,7 +83,7 @@ public class MeDatafetcherTest {
     when(userQueryService.findById(eq(user.getId()))).thenReturn(Optional.of(userData));
     when(jwtService.toToken(any())).thenReturn("test-token");
 
-    String query = "query { me { user { email username bio image token } } }";
+    String query = "query { me { email username token } }";
 
     dgsQueryExecutor.execute(query);
   }
@@ -92,7 +92,7 @@ public class MeDatafetcherTest {
   public void should_return_null_when_anonymous() {
     SecurityContextHolder.clearContext();
 
-    String query = "query { me { user { email } } }";
+    String query = "query { me { email } }";
 
     dgsQueryExecutor.execute(query);
   }

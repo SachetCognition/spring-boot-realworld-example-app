@@ -84,7 +84,7 @@ public class ProfileDatafetcherTest {
     when(profileQueryService.findByUsername(eq("testuser"), any()))
         .thenReturn(Optional.of(profileData));
 
-    String query = "query { profile(username: \"testuser\") { username bio image following } }";
+    String query = "query { profile(username: \"testuser\") { profile { username bio image following } } }";
 
     dgsQueryExecutor.execute(query);
   }
@@ -93,7 +93,7 @@ public class ProfileDatafetcherTest {
   public void should_return_null_for_unknown_profile() {
     when(profileQueryService.findByUsername(eq("unknown"), any())).thenReturn(Optional.empty());
 
-    String query = "query { profile(username: \"unknown\") { username } }";
+    String query = "query { profile(username: \"unknown\") { profile { username } } }";
 
     dgsQueryExecutor.execute(query);
   }
