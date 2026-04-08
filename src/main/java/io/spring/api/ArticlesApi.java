@@ -1,14 +1,21 @@
 package io.spring.api;
 
 import io.spring.application.ArticleQueryService;
+import io.spring.application.CursorPageParameter;
+import io.spring.application.CursorPager;
+import io.spring.application.CursorPager.Direction;
+import io.spring.application.DateTimeCursor;
 import io.spring.application.Page;
 import io.spring.application.article.ArticleCommandService;
 import io.spring.application.article.NewArticleParam;
+import io.spring.application.data.ArticleData;
+import io.spring.application.data.CursorArticleDataList;
 import io.spring.core.article.Article;
 import io.spring.core.user.User;
 import java.util.HashMap;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +48,17 @@ public class ArticlesApi {
   public ResponseEntity getFeed(
       @RequestParam(value = "offset", defaultValue = "0") int offset,
       @RequestParam(value = "limit", defaultValue = "20") int limit,
+      @RequestParam(value = "cursor", required = false) String cursor,
+      @RequestParam(value = "direction", defaultValue = "next") String direction,
       @AuthenticationPrincipal User user) {
+    if (cursor != null) {
+      Direction dir = parseDirection(direction);
+      DateTime cursorDateTime = DateTimeCursor.parse(cursor);
+      CursorPageParameter<DateTime> page = new CursorPageParameter<>(cursorDateTime, limit, dir);
+      CursorPager<ArticleData> cursorPager =
+          articleQueryService.findUserFeedWithCursor(user, page);
+      return ResponseEntity.ok(new CursorArticleDataList(cursorPager));
+    }
     return ResponseEntity.ok(articleQueryService.findUserFeed(user, new Page(offset, limit)));
   }
 
@@ -52,9 +69,26 @@ public class ArticlesApi {
       @RequestParam(value = "tag", required = false) String tag,
       @RequestParam(value = "favorited", required = false) String favoritedBy,
       @RequestParam(value = "author", required = false) String author,
+      @RequestParam(value = "cursor", required = false) String cursor,
+      @RequestParam(value = "direction", defaultValue = "next") String direction,
       @AuthenticationPrincipal User user) {
+    if (cursor != null) {
+      Direction dir = parseDirection(direction);
+      DateTime cursorDateTime = DateTimeCursor.parse(cursor);
+      CursorPageParameter<DateTime> page = new CursorPageParameter<>(cursorDateTime, limit, dir);
+      CursorPager<ArticleData> cursorPager =
+          articleQueryService.findRecentArticlesWithCursor(tag, author, favoritedBy, page, user);
+      return ResponseEntity.ok(new CursorArticleDataList(cursorPager));
+    }
     return ResponseEntity.ok(
         articleQueryService.findRecentArticles(
             tag, author, favoritedBy, new Page(offset, limit), user));
+  }
+
+  private Direction parseDirection(String direction) {
+    if ("prev".equalsIgnoreCase(direction)) {
+      return Direction.PREV;
+    }
+    return Direction.NEXT;
   }
 }
